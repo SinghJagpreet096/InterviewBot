@@ -6,7 +6,7 @@ from streamlit import session_state as ss
 from streamlit_pdf_viewer import pdf_viewer
 
 # Initialize model and config
-model = Model()
+
 cnf = Config()
 get_text = GetText()
 
@@ -55,13 +55,49 @@ if resume:
     elif resume.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
         resume_text = get_text.docx(resume)
 
+# create prompt
+if job_description and resume:
+    prompt = cnf.promt(job_description=job_description_text, resume=resume_text)
+    model = Model(template=prompt)
 # Generate prompt and get questions
-get_questions = st.button("Get Questions")
 
-if get_questions:
-    if job_description and resume:
-        prompt = cnf.promt(job_description=job_description_text, resume=resume_text)
-        questions = model.get_response(prompt)
-        st.write(questions)
+start_interview = st.button("Begin Interview")
+end_interview = st.button("End Interview")
+# write them in container
+for _ in range(20):
+    st.write("\n")
+# st.write("Interview Questions will be displayed here")
+col1, col2 = st.columns([4,1])
+with col1:
+    response = st.text_input("", label_visibility="collapsed",placeholder="Type your response here")
+with col2:
+    submit = st.button("Submit")
+# Display questions
 
+if 'conversation' not in st.session_state:
+    st.session_state.conversation = []
+
+# Function to add a new message to the conversation
+def add_message(role, message):
+    st.session_state.conversation.append(f"{role}: {message}")
+
+if start_interview:
+    question = model.chain_response()
+    add_message("Interviewer", question)
+
+# Get response
+if submit:
+    add_message("Candidate", response)
+    question = model.chain_response(response)
+    # st.write(questions)
+    add_message("Interviewer", question)
+for message in st.session_state.conversation:
+    st.write(message)
+
+if end_interview:
+    summary = model.chain_response(f"Summarize the interview")  
+    st.write(f"Summary:{summary}")
+    st.write("Interview Ended")
+    st.session_state.conversation = []
+    
 

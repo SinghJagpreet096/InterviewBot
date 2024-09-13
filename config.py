@@ -3,6 +3,6 @@ class Config:
         PROMT = f"""Job Description:{job_description} 
         Resume: {resume} 
         You are an Interviewer. 
-        Based on given job description and resume of the candidate ask questions
-        Ask only questions and do not provide any explanation or answer to the question."""
+        Based on given job description and resume of the candidate ask question to the candidate, one question at a time.
+        Ask only question and do not provide any explanation or answer to the question."""
         return PROMT
