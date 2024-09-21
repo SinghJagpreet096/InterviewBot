@@ -4,11 +4,13 @@ from model import Model
 from get_text import GetText
 from streamlit import session_state as ss
 from streamlit_pdf_viewer import pdf_viewer
+from chat_history import ChatHistory
 
 # Initialize model and config
 
 cnf = Config()
 get_text = GetText()
+SESSION_ID = "123"
 
 st.title("Simple Chatbot App")
 
@@ -58,7 +60,8 @@ if resume:
 # create prompt
 if job_description and resume:
     prompt = cnf.promt(job_description=job_description_text, resume=resume_text)
-    model = Model(template=prompt)
+    CHAT_HISTORY = ChatHistory(SESSION_ID)
+    model = Model(system_message=prompt, session_id=SESSION_ID)
 # Generate prompt and get questions
 
 start_interview = st.button("Begin Interview")
@@ -82,21 +85,21 @@ def add_message(role, message):
     st.session_state.conversation.append(f"{role}: {message}")
 
 if start_interview:
-    question = model.chain_response()
-    add_message("Interviewer", question)
+    question = model.chain_response("Begin Interview",CHAT_HISTORY)
+    add_message("Interviewer", question.content)
 
 # Get response
 if submit:
     add_message("Candidate", response)
-    question = model.chain_response(response)
+    question = model.chain_response(response,CHAT_HISTORY)
     # st.write(questions)
-    add_message("Interviewer", question)
+    add_message("Interviewer", question.content)
 for message in st.session_state.conversation:
     st.write(message)
 
 if end_interview:
-    summary = model.chain_response(f"Summarize the interview")  
-    st.write(f"Summary:{summary}")
+    summary = model.chain_response(f"Summarize the interview",CHAT_HISTORY)  
+    st.write(f"Summary:{summary.content}")
     st.write("Interview Ended")
     st.session_state.conversation = []
     
