@@ -5,14 +5,24 @@ from get_text import GetText
 from streamlit import session_state as ss
 from streamlit_pdf_viewer import pdf_viewer
 from chat_history import ChatHistory
+from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
+import av
+from video import VideoRecorder
+from audio import AudioProcessor
+from speechToText import speech_to_text
+from utilities import display_message
 
 # Initialize model and config
 
 cnf = Config()
 get_text = GetText()
 SESSION_ID = "123"
+CHAT_HISTORY = ChatHistory(SESSION_ID)
+MODEL = Model(system_message="", session_id=SESSION_ID)
 
 st.title("Simple Chatbot App")
+
+record = st.button("Start Answering")
 
 # Upload Files
 with st.expander("Upload Files"):
@@ -47,7 +57,9 @@ with st.sidebar:
 # get text from uploaded files
 if job_description:
     if job_description.type == 'application/pdf':
+        
         job_description_text = get_text.pdf(job_description)
+        MODEL.get_embedding(job_description_text)
     elif job_description.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
         job_description_text = get_text.docx(job_description)
 
@@ -60,8 +72,8 @@ if resume:
 # create prompt
 if job_description and resume:
     prompt = cnf.promt(job_description=job_description_text, resume=resume_text)
-    CHAT_HISTORY = ChatHistory(SESSION_ID)
-    model = Model(system_message=prompt, session_id=SESSION_ID)
+    # st.write(prompt)
+    
 # Generate prompt and get questions
 
 start_interview = st.button("Begin Interview")
@@ -82,7 +94,8 @@ if 'conversation' not in st.session_state:
 
 # Function to add a new message to the conversation
 def add_message(role, message):
-    st.session_state.conversation.append(f"{role}: {message}")
+    st.session_state.conversation.append({"sender":role,
+                                          "message": message})
 
 if start_interview:
     question = model.chain_response("Begin Interview",CHAT_HISTORY)
@@ -94,9 +107,17 @@ if submit:
     question = model.chain_response(response,CHAT_HISTORY)
     # st.write(questions)
     add_message("Interviewer", question.content)
-for message in st.session_state.conversation:
-    st.write(message)
 
+
+if record:
+    response = speech_to_text()
+    add_message("Candidate", response)
+    question = model.chain_response(response,CHAT_HISTORY)
+    # st.write(questions)
+    add_message("Interviewer", question.content)
+for chat in st.session_state.conversation:
+    display_message(message=chat['message'], sender=chat['sender'])
+    
 if end_interview:
     summary = model.chain_response(f"Summarize the interview",CHAT_HISTORY)  
     st.write(f"Summary:{summary.content}")

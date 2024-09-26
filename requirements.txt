@@ -8,3 +8,10 @@ llama-index-llms-ollama
 PyPDF2
 streamlit_pdf_viewer
 langchain-ollama
+streamlit-webrtc
+av
+opencv-python
+pydub
+SpeechRecognition
+pyaudio
+langchain_chroma
