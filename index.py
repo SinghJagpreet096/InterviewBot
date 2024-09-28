@@ -1,29 +1,22 @@
-from langchain_ollama import ChatOllama, OllamaEmbeddings
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from get_text import GetText
-from langchain_chroma import Chroma
-from langchain import hub
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
+import streamlit as st
+from streamlit import session_state as ss
+from upload_doc import upload_page
+from chatbot import chat
 
 
 
-llm = ChatOllama(model="llama3.1")
-# write a long text here
+# Set up session state for navigation
+if 'page' not in ss:
+    ss.page = 'upload'
+# Main page after upload
+def main_page():
+    st.title("Main Page")
+    st.write("Documents successfully uploaded. You are now on the main page!")
 
-docs = """
-write a long text here
-write a long text here
-write a long text here
-write a long text here
-write a long text here
-write a long text here
-write a long text here
-
-"""
-embeddings = OllamaEmbeddings(model="nomic-embed-text",)
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=10, chunk_overlap=2)
-splits = text_splitter.split_text(docs)
-vectorstore = Chroma.from_texts(splits, embeddings)
-# Retrieve and generate using the relevant snippets of the blog.
-retriever = vectorstore.as_retriever()
+# Render the correct page based on session state
+if ss.page == 'upload':
+    upload_page()
+elif ss.page == 'chat':
+    retriever = st.session_state['retriever']
+    print(retriever)
+    chat(retriever=retriever)
