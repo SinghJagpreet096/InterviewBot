@@ -1,66 +1,34 @@
-import streamlit as st
-from streamlit import session_state as ss
-from model import Model
-from utilities import display_message
-from chat_history import ChatHistory
-from embedding import Embeddings
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from app.chat_history import ChatHistory
+from app.embedding import Embeddings
 
-SESSION_ID = "123"
-embed = Embeddings()
-def chat(job_description_text):
+
+class Model:
+    def __init__(self, llm, session_id:str):
+        self.llm = llm
+        self.session_id = session_id
+        self.config = {"configurable": {"session_id": session_id}}
     
-    start_interview = st.button("Begin Interview")
-    end_interview = st.button("End Interview")
-    if 'conversation' not in st.session_state:
-        st.session_state.conversation = []
+    def get_response(self, rag_chain, session_history, query):    
+        conversational_rag_chain = RunnableWithMessageHistory(
+        rag_chain,
+        session_history,
+        input_messages_key="input",
+        history_messages_key="chat_history",
+        output_messages_key="answer",
+        )
+        response = conversational_rag_chain.invoke(
+        {"input": query},
+        config={
+            "configurable": {"session_id": self.session_id}
+        },  # constructs a key "abc123" in `store`.
+        )["answer"]
+        return response
 
-# Function to add a new message to the conversation
-    def add_message(role, message):
-        st.session_state.conversation.append({"sender":role,
-                                            "message": message})
-    retriever = embed.get_embedding(job_description_text)
-    if start_interview:
-        # Generate prompt and get questions
-        model = Model(session_id=SESSION_ID)
-        llm = model.llm
-        ch = ChatHistory(session_id=SESSION_ID, llm=llm, retriever=retriever)
-        rag_chain = ch.chain()  
-        question = model.get_response(rag_chain=rag_chain,session_history=ch.get_session_history , query="What is Task Decomposition?")
-        print(question)
-        add_message(role="Interviewer", message=question)
-    col1, col2 = st.columns([4,1])
-    with col1:
-        response = st.text_input("", label_visibility="collapsed",placeholder="Type your response here")
-    with col2:
-        submit = st.button("Submit")
-    # Get response
-    # if submit:
-    #     add_message("Candidate", response)
-    #     question = model.get_response(rag_chain=rag_chain,session_history=ch.get_session_history , query=response)
-    #     # st.write(questions)
-    #     add_message("Interviewer", question.content)
-
-
-    # if record:
-    #     response = speech_to_text()
-    #     add_message("Candidate", response)
-    #     question = model.chain_response(response,CHAT_HISTORY)
-    #     # st.write(questions)
-    #     add_message("Interviewer", question.content)
-    # for chat in st.session_state.conversation:
-    #     display_message(message=chat['message'], sender=chat['sender'])
-        
-    # if end_interview:
-    #     summary = model.get_response(rag_chain=rag_chain,session_history=ch.get_session_history , query="summarize the interview")
-    #     st.write(f"Summary:{summary.content}")
-    #     st.write("Interview Ended")
-    #     st.session_state.conversation = []
-        
 if __name__ == "__main__":
-    job_description_text = """JAGPREET SINGH
-+16479682319 | singhjagpreet4218@gmail.com | Toronto, ON, Canada | LinkedIn | GitHub | Portfolio
-SKILLS
-Programming and Libraries: Python, MySQL, PL/SQL, BigQueryML, Tensorflow, Pytorch, Hugging Face, Scikit-Learn, NumPy,
+    embed = Embeddings()
+    session_id = "123"
+    text = """Programming and Libraries: Python, MySQL, PL/SQL, BigQueryML, Tensorflow, Pytorch, Hugging Face, Scikit-Learn, NumPy,
 Pandas
 Machine Learning: Natural Language Processing (NLP), Neural Network, Deep Learning, LLMs, Computer Vision, Transformers,
 OpenAI, RAG, Generative AI, CNN, RNN, LSTM, Transformers
@@ -117,5 +85,15 @@ Lambton College Master's, Artificial Intelligence and Machine Learning January 2
 GPA: 3.49
 Guru Nanak Dev University Bachelor's, Computer Science
 June 2016 - May 2020"""
-    chat(job_description_text)
+    retriever = embed.get_embedding(text)
+    print(retriever)
+    
+    ch = ChatHistory(session_id=session_id, retriever=retriever)
+    rag_chain = ch.chain()
+    m = Model(session_id=session_id, llm=ch.llm)
+    response = m.get_response(rag_chain=rag_chain,session_history=ch.get_session_history , query="What is Task Decomposition?")
+    print(response)
 
+
+    
+   

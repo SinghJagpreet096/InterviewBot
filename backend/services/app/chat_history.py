@@ -5,19 +5,17 @@ from langchain_core.chat_history import (
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from embedding import Embeddings
+# from embedding import Embeddings
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_ollama import ChatOllama
 from langchain_community.chat_message_histories import ChatMessageHistory
 
-
-
 class ChatHistory:
-    def __init__(self, session_id, retriever, llm):
+    def __init__(self, session_id, retriever):
         self.history = {}
         self.session_id = session_id
         self.retriever = retriever
-        self.llm = llm
+        self.llm = ChatOllama(model="llama3.1")
 
     def context(self):
         ### Contextualize question ###
@@ -71,8 +69,8 @@ if __name__ == "__main__":
     sample text"""
     
     retriever= Embeddings().get_embedding(text, chunk_size=10, chunk_overlap=2)
-    llm = ChatOllama(model="llama3.1")
-    ch = ChatHistory(session_id="abc123", retriever=retriever, llm=llm)
+    
+    ch = ChatHistory(session_id="abc123", retriever=retriever)
     rag_chain = ch.chain()  
     get_session_history = ch.get_session_history
     conversational_rag_chain = RunnableWithMessageHistory(

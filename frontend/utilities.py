@@ -32,6 +32,8 @@ def display_message(message, sender="Candidate"):
                 <strong>{message}</strong><br>    
             </div>
         """, unsafe_allow_html=True)
+
+
 def go_to_page(page:str):
     st.session_state.page = page
 if __name__=="__main__":

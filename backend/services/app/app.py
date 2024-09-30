@@ -1,17 +1,17 @@
 import streamlit as st
-from config import Config
-from model import Model
-from get_text import GetText
+from backend.app.config import Config
+from backend.app.model import Model
+from backend.app.get_text import GetText
 from streamlit import session_state as ss
 from streamlit_pdf_viewer import pdf_viewer
-from chat_history import ChatHistory
+from backend.app.chat_history import ChatHistory
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 import av
 from video import VideoRecorder
-from audio import AudioProcessor
-from speechToText import speech_to_text
-from utilities import display_message
-from embedding import Embeddings
+from backend.app.audio import AudioProcessor
+from backend.app.speechToText import speech_to_text
+from frontend.utilities import display_message
+from backend.app.embedding import Embeddings
 
 # Initialize model and config
 
