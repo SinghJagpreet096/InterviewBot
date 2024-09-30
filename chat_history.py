@@ -5,11 +5,15 @@ from langchain_core.chat_history import (
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
+from embedding import Embeddings
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_ollama import ChatOllama
+from langchain_community.chat_message_histories import ChatMessageHistory
 
 
 
 class ChatHistory:
-    def __init__(self, session_id: str, retriever, llm):
+    def __init__(self, session_id, retriever, llm):
         self.history = {}
         self.session_id = session_id
         self.retriever = retriever
@@ -33,7 +37,7 @@ class ChatHistory:
         )
         return history_aware_retriever
     
-    def chain(self,):
+    def chain(self):
         ### Answer question ###
         ### Answer question ###
         history_aware_retriever = self.context()
@@ -57,11 +61,20 @@ class ChatHistory:
     
     def get_session_history(self) -> BaseChatMessageHistory:
         if self.session_id not in self.history:
-            self.history[self.session_id] = InMemoryChatMessageHistory()
+            self.history[self.session_id] = ChatMessageHistory()
         return self.history[self.session_id]
     
 if __name__ == "__main__":
-    ch = ChatHistory("abc123")
+    text = """Sample text
+    sample text
+    sample text
+    sample text"""
+    
+    retriever= Embeddings().get_embedding(text, chunk_size=10, chunk_overlap=2)
+    llm = ChatOllama(model="llama3.1")
+    ch = ChatHistory(session_id="abc123", retriever=retriever, llm=llm)
+    rag_chain = ch.chain()  
+    get_session_history = ch.get_session_history
     conversational_rag_chain = RunnableWithMessageHistory(
     rag_chain,
     get_session_history,

@@ -10,18 +10,17 @@ from langchain_core.vectorstores import VectorStoreRetriever
 
 class Embeddings:
     def get_embedding(self, text, chunk_size=1000, chunk_overlap=200,persist_directory="./chroma_db"):
-        embeddings = OllamaEmbeddings(model="nomic-embed-text",)
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         splits = text_splitter.split_text(text)
         vectorstore = Chroma.from_texts(texts=splits,
-                                         embedding=embeddings, 
-                                         persist_directory=persist_directory,
+                                        embedding=OllamaEmbeddings(model="nomic-embed-text"),
+                                        persist_directory=persist_directory,
                                         #  client_settings=chroma_settings
                                          )
        
         retriever = vectorstore.as_retriever()
         
-        return retriever, 
+        return retriever
     
     def load_retriever(self, persist_directory="./chroma_db"):
         # Load the Chroma vector store from disk

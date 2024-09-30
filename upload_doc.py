@@ -51,8 +51,7 @@ def upload_page():
         if job_description.type == 'application/pdf': 
             job_description_text = get_text.pdf(job_description)
             print(type(job_description_text))
-            retriever = EMBED.get_embedding(text=job_description_text, chunk_size=10, chunk_overlap=2)
-            st.session_state['retriever'] = retriever
+            st.session_state['job_description_text'] = job_description_text
             
         elif job_description.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
             job_description_text = get_text.docx(job_description)
