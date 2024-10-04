@@ -24,8 +24,7 @@ class Embeddings:
     
     def load_retriever(self, persist_directory="./chroma_db"):
         # Load the Chroma vector store from disk
-        vectorstore = Chroma(
-            persist_directory=persist_directory,
+        vectorstore = Chroma(persist_directory=persist_directory,
             # client_settings=chroma_settings
         )
         
@@ -99,6 +98,8 @@ June 2016 - May 2020"""
     embed = Embeddings()
     ret = embed.get_embedding(text=text, chunk_size=200, chunk_overlap=10)
     print(ret)
+    l = embed.load_retriever()
+    print(l)
     # retriever = embed.load_retriever()
     # print(retriever)
 

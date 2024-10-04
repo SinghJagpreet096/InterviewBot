@@ -1,6 +1,6 @@
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from app.chat_history import ChatHistory
-from app.embedding import Embeddings
+from services.app.chat_history import ChatHistory
+from services.app.embedding import Embeddings
 
 
 class Model:

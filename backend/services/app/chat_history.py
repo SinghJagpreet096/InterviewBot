@@ -9,6 +9,7 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_ollama import ChatOllama
 from langchain_community.chat_message_histories import ChatMessageHistory
+from services.app.embedding import Embeddings
 
 class ChatHistory:
     def __init__(self, session_id, retriever):
@@ -68,7 +69,8 @@ if __name__ == "__main__":
     sample text
     sample text"""
     
-    retriever= Embeddings().get_embedding(text, chunk_size=10, chunk_overlap=2)
+    Embeddings().get_embedding(text, chunk_size=10, chunk_overlap=2)
+    retriever = Embeddings().load_retriever()
     
     ch = ChatHistory(session_id="abc123", retriever=retriever)
     rag_chain = ch.chain()  
