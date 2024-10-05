@@ -7,6 +7,7 @@ import io
 from services.prediction import get_prediction
 import os
 
+
 app = FastAPI()
  
 logging.basicConfig(level=logging.DEBUG)
@@ -20,24 +21,20 @@ os.makedirs(UPLOAD_DIR,exist_ok=True)
 
 
 @app.post("/upload_file")
-async def upload_file(file: bytes = File(...)): 
+async def upload_file(filename: str,file: bytes = File(...)): 
     """
     Upload a file to the server
     """
     try:
-        resume = file
-        job_description = file
+        path = f"{UPLOAD_DIR}/{filename}.pdf"
+        file = io.BytesIO(file)
         # Saving the file
-        resume_path = f"{UPLOAD_DIR}/resume.pdf"
-        job_description_path = f"{UPLOAD_DIR}/job_description.pdf"
-        with open(resume_path, "wb") as f:
-            f.write(resume.read())
-        with open(job_description_path, "wb") as f:
-            f.write(job_description.read())
-        return {"message": "File uploaded successfully"}
+        with open(path, "wb") as f:
+            f.write(file.read())
+        return True
     except Exception as e:
         logging.error(e)
-        return {"message": "Error processing the file"}
+        return False
     
 @app.get("/question")
 async def generate_question(answer: str | None = None):
