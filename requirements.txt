@@ -16,3 +16,5 @@ SpeechRecognition
 pyaudio
 langchain_chroma
 fastapi
+python-multipart
+requests_toolbelt

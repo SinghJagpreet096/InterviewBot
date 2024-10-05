@@ -2,21 +2,26 @@ import streamlit as st
 from streamlit import session_state as ss
 from streamlit_pdf_viewer import pdf_viewer
 import requests
+from typing import BinaryIO
+from requests_toolbelt.multipart.encoder import MultipartEncoder
+
 
 def app():  
-    st.title("Upload Documents")
-    job_description = st.file_uploader("Upload a job description", type=["pdf", "docx"], key='job_description')
-    resume = st.file_uploader("Upload a resume", type=["pdf", "docx"], key='resume')
-    preview_documents(resume, job_description)
+    url = "http://127.0.0.1:8000"
+    with st.expander("Upload Files"):
+        job_description = st.file_uploader("Upload a job description", type=["pdf", "docx"], key='job_description')
+        resume = st.file_uploader("Upload a resume", type=["pdf", "docx"], key='resume')
+        preview_documents(resume, job_description)
+    st.write(requests.get(url + "/status"))
     if st.button("Process Data"):
-        # Send the uploaded files to the backend for processing
-        files = {"resume": resume, "job_description": job_description}
-        try:
-            response = requests.post("http://127.0.0.1:8000/process_data", files=files)
-            st.write(response.json())
-        except requests.exceptions.ConnectionError:
-            st.error("Cannot connect to the backend. Please ensure the server is running.")
-   
+        if resume:
+            try:
+                resume = MultipartEncoder(fields={"file": ("resume", resume, "application/pdf")})
+                response = requests.post(url + "/upload_file", data=resume, headers={"Content-Type": resume.content_type}, timeout=8000).json()   
+                st.write(response)
+            except requests.exceptions.ConnectionError:
+                st.error("Cannot connect to the backend. Please ensure the server is running.")   
+
 def preview_documents(resume, job_description):
     with st.sidebar:
         if 'pdf_resume' not in ss:

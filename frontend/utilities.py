@@ -42,5 +42,5 @@ if __name__=="__main__":
 
     # Example messages for user and AI assistant
     display_message("Hello! How can I assist you today?", "AI Assistant")
-    display_message("I need help with a project.", "User")
+    display_message("I need help with a project.", "Candidate")
     display_message("Sure! What kind of project are you working on?", "AI Assistant")

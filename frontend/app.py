@@ -1,5 +1,7 @@
 import streamlit as st
 
+if 'conversation' not in st.session_state:
+    st.session_state.conversation = []
 # Dictionary to map page names to page modules
 PAGES = {
     "Page 1": "pages.upload_doc",

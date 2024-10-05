@@ -5,14 +5,19 @@ from typing import TextIO, BinaryIO, Annotated
 from pydantic import BaseModel
 import io
 from services.prediction import get_prediction
+import os
 
 app = FastAPI()
  
 logging.basicConfig(level=logging.DEBUG)
 # class PDFData(BaseModel):
 #      file: UploadFile
-resume: BinaryIO | None = None
-job_description: BinaryIO | None = None
+# resume: BinaryIO | None = None
+# job_description: BinaryIO | None = None
+
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR,exist_ok=True)
+
 
 @app.post("/upload_file")
 async def upload_file(file: bytes = File(...)): 
@@ -20,22 +25,38 @@ async def upload_file(file: bytes = File(...)):
     Upload a file to the server
     """
     try:
-        resume = io.BytesIO(file)
-        job_description = io.BytesIO(file) 
+        resume = file
+        job_description = file
+        # Saving the file
+        resume_path = f"{UPLOAD_DIR}/resume.pdf"
+        job_description_path = f"{UPLOAD_DIR}/job_description.pdf"
+        with open(resume_path, "wb") as f:
+            f.write(resume.read())
+        with open(job_description_path, "wb") as f:
+            f.write(job_description.read())
+        return {"message": "File uploaded successfully"}
     except Exception as e:
         logging.error(e)
         return {"message": "Error processing the file"}
-    return {"message": "File uploaded successfully"}
     
-
 @app.get("/question")
 async def generate_question(answer: str | None = None):
     """
     Generate a question based on the answer provided
     """
-    ch = DataProcess().process_data(resume, job_description)
-    question = get_prediction(ch, answer, "abc123")
-    return {"question": question}
+    try:
+        resume = "uploads/resume.pdf"
+        job_description = "uploads/job_description.pdf"
+        dp = DataProcess()
+        ch = dp.process_data(resume, job_description)
+        question = get_prediction(chat_history=ch, session_id="abc123", query=answer)
+        print(question)
+        return {"question": question}
+        # return {"question": "Question from the model"}
+    except Exception as e:
+        logging.error(e)
+        return {"question": "Error generating question"}
+    
 
 
 @app.get("/status")
