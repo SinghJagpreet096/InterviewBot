@@ -10,7 +10,7 @@ import av
 from video import VideoRecorder
 from backend.app.audio import AudioProcessor
 from backend.app.speechToText import speech_to_text
-from frontend.utilities import display_message
+from backend.utilities import display_message
 from backend.app.embedding import Embeddings
 
 # Initialize model and config

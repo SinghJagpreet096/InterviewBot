@@ -9,9 +9,13 @@ from langchain_core.vectorstores import VectorStoreRetriever
 
 
 class Embeddings:
-    def get_embedding(self, text, chunk_size=1000, chunk_overlap=200,persist_directory="./chroma_db"):
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-        splits = text_splitter.split_text(text)
+    def __init__(self, chunk_size=1000, chunk_overlap=200):
+        self.chunk_size = chunk_size
+        self.chunk_overlap = chunk_overlap
+        self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+
+    def get_embedding(self, text, persist_directory="./chroma_db"):
+        splits = self.text_splitter.split_text(text)
         vectorstore = Chroma.from_texts(texts=splits,
                                         embedding=OllamaEmbeddings(model="nomic-embed-text"),
                                         persist_directory=persist_directory,
@@ -19,15 +23,13 @@ class Embeddings:
                                          )
        
         retriever = vectorstore.as_retriever()
-        
         return retriever
     
     def load_retriever(self, persist_directory="./chroma_db"):
         # Load the Chroma vector store from disk
         vectorstore = Chroma(persist_directory=persist_directory,
             # client_settings=chroma_settings
-        )
-        
+        ) 
         # Get the retriever from the loaded vector store
         retriever = vectorstore.as_retriever()
         return retriever
@@ -96,7 +98,7 @@ Guru Nanak Dev University Bachelor's, Computer Science
 June 2016 - May 2020"""
     print(type(text))
     embed = Embeddings()
-    ret = embed.get_embedding(text=text, chunk_size=200, chunk_overlap=10)
+    ret = embed.get_embedding(text=text)
     print(ret)
     l = embed.load_retriever()
     print(l)

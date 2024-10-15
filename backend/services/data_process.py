@@ -13,7 +13,7 @@ class DataProcess:
         resume_text = self.getText.pdf(resume)
         job_description_text = self.getText.pdf(job_description)
         context = f"Job Description: {job_description_text}\n Resume: {resume_text}"
-        retriever = self.embedding.get_embedding(text=context, chunk_size=200, chunk_overlap=10)
+        retriever = self.embedding.get_embedding(text=context)
         ch = ChatHistory(session_id="abc123", retriever=retriever)
         return ch
 def main():
