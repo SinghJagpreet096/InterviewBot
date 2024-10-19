@@ -15,10 +15,10 @@ from backend.app.embedding import Embeddings
 
 # Initialize model and config
 
-# cnf = Config()
-# get_text = GetText()
-SESSION_ID = "123"
-# EMBED = Embeddings()
+# # cnf = Config()
+# # get_text = GetText()
+# SESSION_ID = "123"
+# # EMBED = Embeddings()
 
 # st.title("Simple Chatbot App")
 
