@@ -75,27 +75,7 @@ def preview_documents(resume, job_description):
                 binary_jd = ss.pdf_jd.getvalue()  # Get the binary content of the file
                 pdf_viewer(input=binary_jd, width=400, height=550)  # Display the PDF
 
-def view_chat(prompt="begin interview", response = "Hello! I am your AI Assistant. I will be conducting your interview today."):
-        # Display chat messages from history on app rerun
-        for message in st.session_state.conversation:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
-
-        # Accept user input
-        if response:
-            with st.chat_message("assistant"):
-                response = st.write_stream(response_generator(response))
-            # Add assistant response to chat history
-            st.session_state.conversation.append({"role": "assistant", "content": response})
-            # Add user message to chat history
-
-            st.session_state.conversation.append({"role": "user", "content": prompt})
-            # Display user message in chat message container
-            with st.chat_message("user"):
-                st.markdown(prompt)
-            
 if __name__=="__main__":
     if "conversation" not in st.session_state:
         st.session_state.conversation = []
     
-    view_chat()
