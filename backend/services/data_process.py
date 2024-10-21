@@ -9,11 +9,11 @@ class DataProcess:
         self.getText = GetText()
         self.embedding = Embeddings()
 
-    def process_data(self, resume: BinaryIO | None = None, job_description: BinaryIO | None = None) -> ChatHistory:
+    def process_data(self, session_id:str, resume: BinaryIO | None = None, job_description: BinaryIO | None = None) -> ChatHistory:
         resume_text = self.getText.pdf(resume)
         job_description_text = self.getText.pdf(job_description)
         context = f"Job Description: {job_description_text}\n Resume: {resume_text}"
-        retriever = self.embedding.get_embedding(text=context)
+        retriever = self.embedding.get_embedding(text=context,session_id=session_id)
         ch = ChatHistory(session_id="abc123", retriever=retriever)
         return ch
 def main():

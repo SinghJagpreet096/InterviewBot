@@ -1,55 +1,61 @@
 import streamlit as st
 from streamlit import session_state as ss
 # from pages import chat, upload
-from utilities import go_to_page, preview_documents, display_message
+from utilities import go_to_page, preview_documents, display_message, add_message, view_chat,response_generator
 from services.prediction import get_prediction
 from services.data_process import DataProcess
+import shutil
 
-session_id = "1234"
 st.set_page_config(page_title="Resume Chatbot", page_icon=":robot:")
-with st.expander("Upload Files"):
-    job_description = st.file_uploader("Upload a job description", type=["pdf", "docx"], key='job_description')
-    resume = st.file_uploader("Upload a resume", type=["pdf", "docx"], key='resume')
-    preview_documents(resume, job_description)
-    process_files = st.button("Process Data")
-start_interview = st.button("Start Interview")
-end_interview = st.button("End Interview")
-col1, col2 = st.columns([4,1])
-with col1:
-    answer = st.text_input("",placeholder="Type your response here")
-with col2:
-    submit = st.button("Submit")
-if process_files:
-    context = DataProcess().process_data(job_description, resume)
-    ss.context = context
-    st.write("Data processed successfully")
-    print("Data processed successfully",ss.context)
+session_id = "1234"
+## TODO: add a session id generator
 
-if 'conversation' not in st.session_state:
-    ss.conversation = []
+main, chat = st.columns([2, 3])
+with main:  
+    # add_message("AI Assistant", "Hello! I am your AI Assistant. I will be conducting your interview today.")
+   
+    with st.expander("Upload Files"):
+        job_description = st.file_uploader("Upload a job description", type=["pdf", "docx"], key='job_description')
+        resume = st.file_uploader("Upload a resume", type=["pdf", "docx"], key='resume')
+        preview_documents(resume, job_description)
+        process_files = st.button("Process Data")
 
-if start_interview:
-    st.session_state.conversation = []
-    st.session_state.conversation.append("Interview started")
-    st.write("Interview started")
-    print("Interview started")
-    question = get_prediction(ss.context, session_id, "begin interview")
-    st.session_state.conversation.append(question)
-    st.write(question)
+    if process_files:
+        context = DataProcess().process_data(session_id, job_description, resume)
+        ss.context = context
+        st.write("Data processed successfully")
+        print("Data processed successfully",ss.context)
 
-if submit:
-    st.session_state.conversation.append(answer)
-    question = get_prediction(ss.context, session_id, answer)
-    st.session_state.conversation.append(question)
-    st.write(question)
+    start_interview = st.button("Start Interview")
+    answer = st.chat_input("Type your response here...")
+with chat:
+    if "conversation" not in st.session_state:
+        st.session_state.conversation = []
+    for message in st.session_state.conversation:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+    if start_interview:
+        print("Interview started")
+        question = get_prediction(ss.context, session_id, "begin interview")
+        with st.chat_message("assistant"):
+            response = st.write_stream(response_generator(question))
+        st.session_state.conversation.append({"role": "assistant", "content": response})
+        # st.session_state.conversation.append(question)
+    
+    if answer:
+        with st.chat_message("user"):
+            st.markdown(answer)
+        st.session_state.conversation.append({"role": "user", "content": answer})
+        response = get_prediction(ss.context, session_id, answer)
+        with st.chat_message("assistant"):
+            response = st.write_stream(response_generator(response))
+        st.session_state.conversation.append({"role": "assistant", "content": response})
 
-if end_interview:
-    st.session_state.conversation = []
-    st.write("Interview ended")
-    print("Interview ended")
-    summary = get_prediction(ss.context, session_id, "summarize the interview")
-    st.session_state.conversation.append(summary)
-    st.write(summary)
+      
+       
+
+    
+    
 
 
 

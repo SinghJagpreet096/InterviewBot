@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit import session_state as ss
-from utilities import go_to_page, preview_documents
+from backend.utilities import go_to_page, preview_documents
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 import requests
 

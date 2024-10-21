@@ -1,6 +1,9 @@
 import streamlit as st
 from streamlit import session_state as ss
 from streamlit_pdf_viewer import pdf_viewer
+import streamlit as st
+import random
+import time
 
 # Function to display user and AI messages with different alignments
 def display_message(message, sender="Candidate"):
@@ -13,7 +16,7 @@ def display_message(message, sender="Candidate"):
                 border-radius: 10px; 
                 padding: 10px; 
                 margin-bottom: 10px; 
-                background-color: #1a1616; 
+                background-color: #055B0A; 
                 width: fit-content;
                 margin-left: auto;">
                 {message}<br>
@@ -28,7 +31,7 @@ def display_message(message, sender="Candidate"):
                 border-radius: 10px; 
                 padding: 10px; 
                 margin-bottom: 10px; 
-                background-color: #1a1616; 
+                background-color: #4B4B4B; 
                 width: fit-content;
                 margin-right: auto;">
                 <strong>{message}</strong><br>    
@@ -38,6 +41,14 @@ def display_message(message, sender="Candidate"):
 
 def go_to_page(page:str):
     st.session_state.page = page
+
+def add_message(role, message):
+    ss.conversation.append({"sender":role, "message": message})
+
+def response_generator(response:str = "Hello! I am your AI Assistant. I will be conducting your interview today."):
+        for word in response.split():
+            yield word + " "
+            time.sleep(0.05)
 
 def preview_documents(resume, job_description):
     with st.sidebar:
@@ -64,12 +75,27 @@ def preview_documents(resume, job_description):
                 binary_jd = ss.pdf_jd.getvalue()  # Get the binary content of the file
                 pdf_viewer(input=binary_jd, width=400, height=550)  # Display the PDF
 
-if __name__=="__main__":
-# Streamlit app interface
-    st.title("Chat Interface with Aligned Messages")
+def view_chat(prompt="begin interview", response = "Hello! I am your AI Assistant. I will be conducting your interview today."):
+        # Display chat messages from history on app rerun
+        for message in st.session_state.conversation:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
-    # Example messages for user and AI assistant
-    display_message("Hello! How can I assist you today?", "AI Assistant")
-    display_message("I need help with a project.", "Candidate")
-    display_message("Sure! What kind of project are you working on?", "AI Assistant")
-    display_message("I am working on a chatbot project.", "Candidate")
+        # Accept user input
+        if response:
+            with st.chat_message("assistant"):
+                response = st.write_stream(response_generator(response))
+            # Add assistant response to chat history
+            st.session_state.conversation.append({"role": "assistant", "content": response})
+            # Add user message to chat history
+
+            st.session_state.conversation.append({"role": "user", "content": prompt})
+            # Display user message in chat message container
+            with st.chat_message("user"):
+                st.markdown(prompt)
+            
+if __name__=="__main__":
+    if "conversation" not in st.session_state:
+        st.session_state.conversation = []
+    
+    view_chat()
