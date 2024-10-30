@@ -1,6 +1,9 @@
 
 import speech_recognition as sr
 
+# TODO 
+# 1. Find a better model
+
 def speech_to_text():
     # Initialize recognizer
     text = ""

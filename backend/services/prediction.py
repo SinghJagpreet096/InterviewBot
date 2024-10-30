@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from services.data_process import DataProcess
 from services.app.model import Model
+import time
 
 
 def get_prediction(chat_history, session_id, query):
@@ -17,7 +18,11 @@ def main():
     
     while True:
         query = input("Enter your query: ")
-        get_prediction(ch,session_id,query)
+        start = time.time()
+        res = get_prediction(ch,session_id,query)
+        end = time.time()
+        print(res)
+        print(f"Time taken: {end-start}")
     
 if __name__ == "__main__":
     main()

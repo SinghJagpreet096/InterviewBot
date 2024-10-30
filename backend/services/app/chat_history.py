@@ -10,13 +10,14 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_ollama import ChatOllama
 from langchain_community.chat_message_histories import ChatMessageHistory
 from services.app.embedding import Embeddings
+from services.app.config import Config
 
 class ChatHistory:
     def __init__(self, session_id, retriever):
         self.history = {}
         self.session_id = session_id
         self.retriever = retriever
-        self.llm = ChatOllama(model="llama3.1")
+        self.llm = ChatOllama(model=Config().model_id)
 
     def context(self):
         ### Contextualize question ###
