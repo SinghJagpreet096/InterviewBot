@@ -2,6 +2,13 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from services.app.config import Config
+from langchain_pinecone import PineconeVectorStore
+import os
+from dotenv import load_dotenv
+import logging
+
+load_dotenv()
+PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
 
 
 class Embeddings:
@@ -19,6 +26,7 @@ class Embeddings:
                                         persist_directory=persist_directory,
                                         #  client_settings=chroma_settings
                                          )
+        logging.info("Vector store created")
         return 
     
     def load_retriever(self, session_id:str):
@@ -29,8 +37,8 @@ class Embeddings:
     
         # Get the retriever from the loaded vector store
         retriever = vectorstore.as_retriever()
+        logging.info("Retriever loaded")
         return retriever
-
 
 if __name__ == "__main__":
     text = """JAGPREET SINGH
@@ -99,6 +107,7 @@ June 2016 - May 2020"""
     # print(ret)
     l = embed.load_retriever(session_id="abc123")
     print(l)
+    # embed.reteiver_pineocone()
     # retriever = embed.load_retriever()
     # print(retriever)
 

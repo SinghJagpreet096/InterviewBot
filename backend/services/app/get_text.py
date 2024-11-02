@@ -1,8 +1,10 @@
 import PyPDF2
+import logging
 from typing import TextIO, BinaryIO
 
 class GetText:
     def pdf(self, file:BinaryIO) -> str: 
+        logging.info("Extracting text from PDF")
         reader = PyPDF2.PdfReader(file)
         text = ""
     
@@ -13,6 +15,7 @@ class GetText:
         return text
     
     def docx(self, file:TextIO) -> str:
+        logging.info("Extracting text from DOCX")
         pass
 
 if __name__ == "__main__":

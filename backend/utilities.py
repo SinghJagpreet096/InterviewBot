@@ -4,7 +4,7 @@ from streamlit_pdf_viewer import pdf_viewer
 import streamlit as st
 import random
 import time
-from services.app.textToSpeech import text_to_speech
+
 
 # Function to display user and AI messages with different alignments
 def display_message(message, sender="Candidate"):

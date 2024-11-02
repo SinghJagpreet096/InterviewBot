@@ -1,6 +1,7 @@
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from services.app.chat_history import ChatHistory
 from services.app.embedding import Embeddings
+import logging
 
 
 class Model:
@@ -18,11 +19,9 @@ class Model:
         output_messages_key="answer",
         )
         response = conversational_rag_chain.invoke(
-        {"input": query},
-        config={
-            "configurable": {"session_id": self.session_id}
-        },  # constructs a key "abc123" in `store`.
-        )["answer"]
+                                            {"input": query},
+                                                config=self.config)["answer"]
+        logging.info(f"Response Generated: {response}")
         return response
 
 if __name__ == "__main__":

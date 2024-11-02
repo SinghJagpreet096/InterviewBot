@@ -2,12 +2,17 @@ from fastapi import APIRouter
 from services.data_process import DataProcess
 from services.app.model import Model
 import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_prediction(chat_history, session_id, query):
+    logging.info("loading model")
     m = Model(session_id=session_id, llm=chat_history.llm)
     response = m.get_response(rag_chain=chat_history.chain(), session_history=chat_history.get_session_history, query=query)
     # print(response)
+    logging.info("prediction generated")
     return response
 
 def main():

@@ -5,14 +5,14 @@ from utilities import go_to_page, preview_documents, response_generator
 from services.prediction import get_prediction
 from services.data_process import DataProcess
 from services.app.speechToText import speech_to_text
-from services.app.textToSpeech import text_to_speech
+from services.app.textToSpeech import GoogleTextToSpeech
 import shutil
 import cv2
 
 st.set_page_config(page_title="Resume Chatbot", page_icon=":robot:")
 session_id = "1234"
 ## TODO: add a session id generator
-
+gtts = GoogleTextToSpeech()
 main, chat = st.columns([3,2])
 with main:  
     with st.container():
@@ -45,7 +45,7 @@ with chat:
         if start_interview:
             print("Interview started")
             question = get_prediction(ss.context, session_id, "begin interview")
-            text_to_speech(question)
+            gtts.text_to_speech(question)
             with st.chat_message("assistant"):
                 response = st.write_stream(response_generator(question))
             st.session_state.conversation.append({"role": "assistant", "content": response})
@@ -56,7 +56,7 @@ with chat:
                 st.markdown(voice)
             st.session_state.conversation.append({"role": "user", "content": voice})
             response = get_prediction(ss.context, session_id, voice)
-            text_to_speech(response)
+            gtts.text_to_speech(response)
             with st.chat_message("assistant"):
                 # text_to_speech(response)
                 response = st.write_stream(response_generator(response))
@@ -66,7 +66,7 @@ with chat:
                 st.markdown(answer)
             st.session_state.conversation.append({"role": "user", "content": answer})
             response = get_prediction(ss.context, session_id, answer)
-            text_to_speech(response)
+            gtts.text_to_speech(response)
             with st.chat_message("assistant"):
                 # text_to_speech(response_generator(response))
                 response = st.write_stream(response_generator(response))
