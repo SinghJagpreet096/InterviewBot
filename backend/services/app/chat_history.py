@@ -1,6 +1,5 @@
 from langchain_core.chat_history import (
     BaseChatMessageHistory,
-    InMemoryChatMessageHistory,
 )
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
@@ -70,11 +69,11 @@ if __name__ == "__main__":
     sample text
     sample text
     sample text"""
+    session_id="abc123"
+    Embeddings(chunk_size=10, chunk_overlap=2).create_embedding(text, session_id)
+    retriever = Embeddings().load_retriever(session_id="abc123")
     
-    Embeddings().get_embedding(text, chunk_size=10, chunk_overlap=2)
-    retriever = Embeddings().load_retriever()
-    
-    ch = ChatHistory(session_id="abc123", retriever=retriever)
+    ch = ChatHistory(session_id=session_id, retriever=retriever)
     rag_chain = ch.chain()  
     get_session_history = ch.get_session_history
     conversational_rag_chain = RunnableWithMessageHistory(

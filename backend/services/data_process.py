@@ -13,8 +13,9 @@ class DataProcess:
         resume_text = self.getText.pdf(resume)
         job_description_text = self.getText.pdf(job_description)
         context = f"Job Description: {job_description_text}\n Resume: {resume_text}"
-        retriever = self.embedding.get_embedding(text=context,session_id=session_id)
-        ch = ChatHistory(session_id="abc123", retriever=retriever)
+        self.embedding.create_embedding(text=context,session_id=session_id)
+        retriever = self.embedding.load_retriever(session_id=session_id)
+        ch = ChatHistory(session_id=session_id, retriever=retriever)
         return ch
 def main():
     data_process = DataProcess()

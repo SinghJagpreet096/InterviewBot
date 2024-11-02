@@ -13,7 +13,7 @@ def get_prediction(chat_history, session_id, query):
 def main():
     resume = "/Users/jagpreetsingh/ML_Projects/interviewbot/1724448810.pdf"
     job_description = "/Users/jagpreetsingh/ML_Projects/interviewbot/sample-job-description.pdf"
-    session_id = "abc123"
+    session_id = "abc124"
     ch = DataProcess().process_data(session_id, resume, job_description)
     
     while True:
@@ -21,8 +21,10 @@ def main():
         start = time.time()
         res = get_prediction(ch,session_id,query)
         end = time.time()
-        print(res)
         print(f"Time taken: {end-start}")
+        print(res)
+        
     
+
 if __name__ == "__main__":
     main()

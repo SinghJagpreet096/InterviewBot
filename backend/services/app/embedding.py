@@ -1,11 +1,6 @@
 from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.chains import create_history_aware_retriever, create_retrieval_chain
-from chromadb.config import Settings
-import chromadb
-from langchain_core.vectorstores import VectorStoreRetriever
 from services.app.config import Config
 
 
@@ -16,7 +11,7 @@ class Embeddings:
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         self.embedding = OllamaEmbeddings(model=Config().embedder_id)
 
-    def get_embedding(self, text: str, session_id: str):
+    def create_embedding(self, text: str, session_id: str):
         splits = self.text_splitter.split_text(text)
         persist_directory = f"./{session_id}/chroma_db"
         vectorstore = Chroma.from_texts(texts=splits,
@@ -24,15 +19,14 @@ class Embeddings:
                                         persist_directory=persist_directory,
                                         #  client_settings=chroma_settings
                                          )
-       
-        retriever = vectorstore.as_retriever()
-        return retriever
+        return 
     
-    def load_retriever(self, persist_directory="./chroma_db"):
+    def load_retriever(self, session_id:str):
         # Load the Chroma vector store from disk
-        vectorstore = Chroma(persist_directory=persist_directory,
+        persist_directory = f"./{session_id}/chroma_db"
+        vectorstore = Chroma(persist_directory=persist_directory,embedding_function=self.embedding)
             # client_settings=chroma_settings
-        ) 
+    
         # Get the retriever from the loaded vector store
         retriever = vectorstore.as_retriever()
         return retriever
@@ -101,9 +95,9 @@ Guru Nanak Dev University Bachelor's, Computer Science
 June 2016 - May 2020"""
     print(type(text))
     embed = Embeddings()
-    ret = embed.get_embedding(text=text, session_id="abc123")
-    print(ret)
-    l = embed.load_retriever()
+    ret = embed.create_embedding(text=text, session_id="abc123")
+    # print(ret)
+    l = embed.load_retriever(session_id="abc123")
     print(l)
     # retriever = embed.load_retriever()
     # print(retriever)
