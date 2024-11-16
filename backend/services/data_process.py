@@ -1,6 +1,6 @@
 from services.app.embedding import Embeddings
 from services.app.get_text import GetText
-from services.app.chat_history import ChatHistory
+from services.app.chat_history import ChatHistory, ChatHistory_CPP
 from typing import BinaryIO
 import logging
 
@@ -18,6 +18,7 @@ class DataProcess:
         self.embedding.create_embedding(text=context,session_id=session_id)
         retriever = self.embedding.load_retriever(session_id=session_id)
         ch = ChatHistory(session_id=session_id, retriever=retriever)
+        # ch = ChatHistory_CPP(session_id=session_id, retriever=retriever)
         logging.info("Data processed successfully")
         return ch
 def main():

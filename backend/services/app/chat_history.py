@@ -11,6 +11,7 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from services.app.embedding import Embeddings
 from services.app.config import Config
 import logging
+from llama_cpp import Llama
 
 class ChatHistory:
     def __init__(self, session_id, retriever):
@@ -67,7 +68,18 @@ class ChatHistory:
         if self.session_id not in self.store:
             self.store[self.session_id] = ChatMessageHistory()
         return self.store[self.session_id]
+
+class ChatHistory_CPP(ChatHistory):
+    def __init__(self, session_id, retriever):
+        super().__init__(session_id, retriever)
+        self.llm = Llama.from_pretrained(
+        repo_id="singhjagpreet/Llama-3.2-1B-Instruct-Q8_0-GGUF",
+        filename="llama-3.2-1b-instruct-q8_0.gguf",
+        verbose=False,
+    )
     
+    
+
 if __name__ == "__main__":
     text = """Sample text
     sample text
@@ -77,7 +89,8 @@ if __name__ == "__main__":
     Embeddings(chunk_size=10, chunk_overlap=2).create_embedding(text, session_id)
     retriever = Embeddings().load_retriever(session_id="abc123")
     
-    ch = ChatHistory(session_id=session_id, retriever=retriever)
+    # ch = ChatHistory(session_id=session_id, retriever=retriever)]
+    ch = ChatHistory_CPP(session_id=session_id, retriever=retriever)
     rag_chain = ch.chain()  
     get_session_history = ch.get_session_history
     conversational_rag_chain = RunnableWithMessageHistory(

@@ -3,6 +3,7 @@ from services.data_process import DataProcess
 from services.app.model import Model
 import time
 import logging
+from llama_cpp import Llama
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +29,36 @@ def main():
         end = time.time()
         print(f"Time taken: {end-start}")
         print(res)
-        
-    
 
+# def main():
+#     from llama_cpp import Llama
+
+#     llm = Llama.from_pretrained(
+#         repo_id="singhjagpreet/Llama-3.2-1B-Instruct-Q8_0-GGUF",
+#         filename="llama-3.2-1b-instruct-q8_0.gguf",
+#         verbose=False,
+#     )
+#     # while True:
+#     # query = input("Enter your query: ")
+#     start = time.time()
+#     res = llm.create_chat_completion(
+#         messages = [
+#             {
+#                 "role": "user",
+#                 "content": "capital of india"
+#             }
+#         ],
+#         response_format={
+#         "type": "string",
+#     },
+#     temperature=0.7,
+#     )
+#     end = time.time()
+#     print(f"Time taken: {end-start}")
+#     print(res)
+#     print(res["choices"][0]["message"]["content"])
+    
 if __name__ == "__main__":
-    main()
+    # main()
+    pass
+    
