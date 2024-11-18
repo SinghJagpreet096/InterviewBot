@@ -4,7 +4,11 @@ from streamlit_pdf_viewer import pdf_viewer
 import streamlit as st
 import random
 import time
+from services.app.textToSpeech import GoogleTextToSpeech
+from threading import Thread
 
+
+gtts = GoogleTextToSpeech()
 
 # Function to display user and AI messages with different alignments
 def display_message(message, sender="Candidate"):
@@ -46,11 +50,18 @@ def go_to_page(page:str):
 def add_message(role, message):
     ss.conversation.append({"sender":role, "message": message})
 
+def speech_thread(text):
+    """Run TTS in a separate thread."""
+    tts_thread = Thread(target=gtts.text_to_speech, args=(text,))
+    tts_thread.start()
+    print("TTS thread started")
+
+
 def response_generator(response:str = "Hello! I am your AI Assistant. I will be conducting your interview today."):
-        
+        speech_thread(response)
         for word in response.split():
             yield word + " "
-            time.sleep(0.05)
+            time.sleep(0.6)
 
 def preview_documents(resume, job_description):
 

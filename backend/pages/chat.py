@@ -4,14 +4,19 @@ from services.app.textToSpeech import GoogleTextToSpeech
 from utilities import response_generator
 from streamlit import session_state as ss
 from services.app.speechToText import speech_to_text
+from threading import Thread
 
 gtts = GoogleTextToSpeech()
 start_interview = st.button("Start Interview")
 record = st.button("Record")
 answer = st.chat_input("Type your response here...")
 session_id = ss.session_id
+def speech_thread(text):
+    """Run TTS in a separate thread."""
+    tts_thread = Thread(target=gtts.text_to_speech, args=(text,))
+    tts_thread.start()
 
-with st.container(border=True):
+with st.container(border=True, ):
     if "conversation" not in st.session_state:
         st.session_state.conversation = []
     for message in st.session_state.conversation:
@@ -20,7 +25,8 @@ with st.container(border=True):
     if start_interview:
         print("Interview started")
         question = get_prediction(ss.context, session_id, "begin interview")
-        gtts.text_to_speech(question)
+        # gtts.text_to_speech(question)
+        # speech_thread(question)
         with st.chat_message("assistant"):
             response = st.write_stream(response_generator(question))
         st.session_state.conversation.append({"role": "assistant", "content": response})
@@ -31,7 +37,8 @@ with st.container(border=True):
             st.markdown(voice)
         st.session_state.conversation.append({"role": "user", "content": voice})
         response = get_prediction(ss.context, session_id, voice)
-        gtts.text_to_speech(response)
+        # gtts.text_to_speech(response)
+        # speech_thread(response)
         with st.chat_message("assistant"):
             # text_to_speech(response)
             response = st.write_stream(response_generator(response))
@@ -41,7 +48,8 @@ with st.container(border=True):
             st.markdown(answer)
         st.session_state.conversation.append({"role": "user", "content": answer})
         response = get_prediction(ss.context, session_id, answer)
-        gtts.text_to_speech(response)
+        # gtts.text_to_speech(response)
+        # speech_thread(response)
         with st.chat_message("assistant"):
             # text_to_speech(response_generator(response))
             response = st.write_stream(response_generator(response))

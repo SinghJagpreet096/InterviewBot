@@ -8,12 +8,21 @@ from services.app.speechToText import speech_to_text
 from services.app.textToSpeech import GoogleTextToSpeech
 import shutil
 import cv2
+from threading import Thread
+
+
 
 st.set_page_config(page_title="Resume Chatbot", page_icon=":robot:")
 session_id = "1234"
 ## TODO: add a session id generator
 gtts = GoogleTextToSpeech()
 main, chat = st.columns([3,2])
+
+def speech_thread(text):
+    """Run TTS in a separate thread."""
+    tts_thread = Thread(target=gtts.text_to_speech, args=(text,))
+    tts_thread.start()
+
 with main:  
     with st.container():
     # add_message("AI Assistant", "Hello! I am your AI Assistant. I will be conducting your interview today.")
@@ -45,7 +54,8 @@ with chat:
         if start_interview:
             print("Interview started")
             question = get_prediction(ss.context, session_id, "begin interview")
-            gtts.text_to_speech(question)
+            # gtts.text_to_speech(question)
+            speech_thread(question)
             with st.chat_message("assistant"):
                 response = st.write_stream(response_generator(question))
             st.session_state.conversation.append({"role": "assistant", "content": response})
@@ -66,7 +76,8 @@ with chat:
                 st.markdown(answer)
             st.session_state.conversation.append({"role": "user", "content": answer})
             response = get_prediction(ss.context, session_id, answer)
-            gtts.text_to_speech(response)
+            # gtts.text_to_speech(response)
+            speech_thread(response)
             with st.chat_message("assistant"):
                 # text_to_speech(response_generator(response))
                 response = st.write_stream(response_generator(response))
