@@ -26,8 +26,9 @@ def main(session_id):
             if "context" not in ss:
                 ss.context = context
             st.switch_page("pages/chat.py")
-        except:
+        except Exception as e:
             st.error("Oops! Something went wrong")
+            raise e
 
 if __name__ == "__main__":
     session_id = ss.session_id

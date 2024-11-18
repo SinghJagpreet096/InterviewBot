@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit import session_state as ss
+import time
 
 # Set page configuration
 # st.set_page_config(page_title="Login Page", page_icon="🔑")
@@ -20,6 +21,7 @@ if st.button("Login"):
     if username == USERNAME and password == PASSWORD:
         st.success("Login successful!")
         session_id = ss.session_id
+        time.sleep(1)
         st.switch_page("pages/upload.py")
     else:
         st.error("Invalid username or password.")
