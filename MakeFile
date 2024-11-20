@@ -1,0 +1,68 @@
+
+# Variables
+VENV_PATH=venv
+PYTHON=$(VENV_PATH)/bin/python
+PIP=$(VENV_PATH)/bin/pip
+UVICORN=$(VENV_PATH)/bin/uvicorn
+STREAMLIT=$(VENV_PATH)/bin/streamlit
+OLLAMA=$(VENV_PATH)/bin/ollama
+BACKEND_DIR=backend
+FRONTEND_DIR=frontend
+
+# Detect OS for activation command
+ifeq ($(OS),Windows_NT)
+    ACTIVATE_VENV=.\\$(VENV_PATH)\\Scripts\\activate
+    RM_CMD=rd /s /q $(VENV_PATH)
+else
+    ACTIVATE_VENV=. $(VENV_PATH)/bin/activate
+    RM_CMD=rm -rf $(VENV_PATH)
+endif
+
+.PHONY: all init fastapi streamlit ollama run clean
+
+# Default target
+all: init
+
+# Initialize the virtual environment and install dependencies
+init:
+	@echo "Creating virtual environment..."
+	python -m venv $(VENV_PATH)
+	@echo "Activating virtual environment and installing dependencies..."
+	$(ACTIVATE_VENV) && \
+		pip install --upgrade pip && \
+		pip install -r backend/requirements.txt && \
+		pip install -r frontend/requirements.txt
+
+# Run FastAPI server
+fastapi:
+	@echo "Starting FastAPI server..."
+	$(ACTIVATE_VENV) && \
+		cd $(BACKEND_DIR) && \
+		$(UVICORN) main:app --reload
+
+# Run Streamlit app
+streamlit:
+	@echo "Starting Streamlit app..."
+	$(ACTIVATE_VENV) && \
+		cd $(FRONTEND_DIR) && \
+		$(STREAMLIT) run app.py
+
+# Start Ollama service
+ollama:
+	@echo "Starting Ollama service..."
+	$(ACTIVATE_VENV) && \
+		$(OLLAMA) serve
+
+# Run all services concurrently
+run:
+	@echo "Running FastAPI, Streamlit, and Ollama concurrently..."
+	$(ACTIVATE_VENV) && \
+		$(MAKE) fastapi & \
+		$(MAKE) streamlit & \
+		$(MAKE) ollama & \
+		wait
+
+# Clean up the virtual environment
+clean:
+	@echo "Cleaning up virtual environment..."
+	$(RM_CMD)

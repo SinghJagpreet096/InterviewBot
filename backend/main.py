@@ -6,16 +6,12 @@ from pydantic import BaseModel
 import io
 from services.prediction import get_prediction
 import os
+# from backend.services.app.embedding import Embeddings
 
 
 app = FastAPI()
- 
+FILE_UPLOADED = False
 logging.basicConfig(level=logging.DEBUG)
-# class PDFData(BaseModel):
-#      file: UploadFile
-# resume: BinaryIO | None = None
-# job_description: BinaryIO | None = None
-
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR,exist_ok=True)
 
@@ -31,6 +27,7 @@ async def upload_file(filename: str,file: bytes = File(...)):
         # Saving the file
         with open(path, "wb") as f:
             f.write(file.read())
+        FILE_UPLOADED = True
         return True
     except Exception as e:
         logging.error(e)
@@ -54,7 +51,9 @@ async def generate_question(answer: str | None = None):
         logging.error(e)
         return {"question": "Error generating question"}
     
-
+# def create_history():
+#     
+#     return ch
 
 @app.get("/status")
 async def status():
@@ -64,3 +63,4 @@ async def status():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+    

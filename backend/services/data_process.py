@@ -1,7 +1,8 @@
 from services.app.embedding import Embeddings
 from services.app.get_text import GetText
-from services.app.chat_history import ChatHistory
+from services.app.chat_history import ChatHistory, ChatHistory_CPP
 from typing import BinaryIO
+import logging
 
 
 class DataProcess:
@@ -9,12 +10,16 @@ class DataProcess:
         self.getText = GetText()
         self.embedding = Embeddings()
 
-    def process_data(self, resume: BinaryIO | None = None, job_description: BinaryIO | None = None) -> ChatHistory:
+    def process_data(self, session_id:str, resume: BinaryIO | None = None, job_description: BinaryIO | None = None) -> ChatHistory:
+        logging.info("Processing data")
         resume_text = self.getText.pdf(resume)
         job_description_text = self.getText.pdf(job_description)
         context = f"Job Description: {job_description_text}\n Resume: {resume_text}"
-        retriever = self.embedding.get_embedding(text=context, chunk_size=200, chunk_overlap=10)
-        ch = ChatHistory(session_id="abc123", retriever=retriever)
+        self.embedding.create_embedding(text=context,session_id=session_id)
+        retriever = self.embedding.load_retriever(session_id=session_id)
+        ch = ChatHistory(session_id=session_id, retriever=retriever)
+        # ch = ChatHistory_CPP(session_id=session_id, retriever=retriever)
+        logging.info("Data processed successfully")
         return ch
 def main():
     data_process = DataProcess()

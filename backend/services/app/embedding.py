@@ -1,37 +1,44 @@
 from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.chains import create_history_aware_retriever, create_retrieval_chain
-from chromadb.config import Settings
-import chromadb
-from langchain_core.vectorstores import VectorStoreRetriever
+from services.app.config import Config
+from langchain_pinecone import PineconeVectorStore
+import os
+from dotenv import load_dotenv
+import logging
+
+load_dotenv()
+PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
 
 
 class Embeddings:
-    def get_embedding(self, text, chunk_size=1000, chunk_overlap=200,persist_directory="./chroma_db"):
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-        splits = text_splitter.split_text(text)
+    def __init__(self, chunk_size=1000, chunk_overlap=200):
+        self.chunk_size = chunk_size
+        self.chunk_overlap = chunk_overlap
+        self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+        self.embedding = OllamaEmbeddings(model=Config().embedder_id)
+
+    def create_embedding(self, text: str, session_id: str):
+        splits = self.text_splitter.split_text(text)
+        persist_directory = f"./{session_id}/chroma_db"
         vectorstore = Chroma.from_texts(texts=splits,
-                                        embedding=OllamaEmbeddings(model="nomic-embed-text"),
+                                        embedding=self.embedding,
                                         persist_directory=persist_directory,
                                         #  client_settings=chroma_settings
                                          )
-       
-        retriever = vectorstore.as_retriever()
-        
-        return retriever
+        logging.info("Vector store created")
+        return 
     
-    def load_retriever(self, persist_directory="./chroma_db"):
+    def load_retriever(self, session_id:str):
         # Load the Chroma vector store from disk
-        vectorstore = Chroma(persist_directory=persist_directory,
+        persist_directory = f"./{session_id}/chroma_db"
+        vectorstore = Chroma(persist_directory=persist_directory,embedding_function=self.embedding)
             # client_settings=chroma_settings
-        )
-        
+    
         # Get the retriever from the loaded vector store
         retriever = vectorstore.as_retriever()
+        logging.info("Retriever loaded")
         return retriever
-
 
 if __name__ == "__main__":
     text = """JAGPREET SINGH
@@ -96,10 +103,11 @@ Guru Nanak Dev University Bachelor's, Computer Science
 June 2016 - May 2020"""
     print(type(text))
     embed = Embeddings()
-    ret = embed.get_embedding(text=text, chunk_size=200, chunk_overlap=10)
-    print(ret)
-    l = embed.load_retriever()
+    ret = embed.create_embedding(text=text, session_id="abc123")
+    # print(ret)
+    l = embed.load_retriever(session_id="abc123")
     print(l)
+    # embed.reteiver_pineocone()
     # retriever = embed.load_retriever()
     # print(retriever)
 
