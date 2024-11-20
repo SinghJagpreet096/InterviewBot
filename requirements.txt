@@ -21,3 +21,4 @@ requests_toolbelt
 gtts
 llama-cpp-python
 langchain-pinecone
+pyttsx3

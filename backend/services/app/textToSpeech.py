@@ -3,17 +3,14 @@ from pydub import AudioSegment
 from pydub.playback import play
 from io import BytesIO
 from abc import ABC, abstractmethod
-import IPython.display as ipd
+import pyttsx3
+import time
 
 # TODO
 # 1. find a better model
 
-class TextToSpeech(ABC):
 
-    @abstractmethod
-    def text_to_speech(self, text:str):
-        pass
-class GoogleTextToSpeech(TextToSpeech):
+class googleTextToSpeech():
 
     def text_to_speech(self, text:str):
         '''
@@ -27,7 +24,6 @@ class GoogleTextToSpeech(TextToSpeech):
         Returns:
         None
         '''
-        
         # Convert the text to speech
         tts = gTTS(text=text, lang='en', speed=1.5)
         audio_data = BytesIO()
@@ -40,21 +36,20 @@ class GoogleTextToSpeech(TextToSpeech):
         # return audio_data
         return
 
-# class parlerTextToSpeech(TextToSpeech):
-#     def __init__(self, description:str, device:str = "cpu"):
-#         self.device = device
-#         self.model = ParlerTTSForConditionalGeneration.from_pretrained("parler-tts/parler-tts-mini-v1").to(self.device)
-#         self.tokenizer = ParlerTTSForConditionalGeneration.from_pretrained("parler-tts/parler-tts-mini-v1").to(self.device) 
-#         self.description = description
-        
-#     def text_to_speech(self, text_prompt:str):
-#         input_ids = self.tokenizer(self.description, return_tensors="pt").input_ids.to(self.device)
-#         prompt_input_ids = self.tokenizer(text_prompt, return_tensors="pt").input_ids.to(self.device)
-#         generation = self.model.generate(input_ids=input_ids, prompt_input_ids=prompt_input_ids)
-#         audio_arr = generation.cpu().numpy().squeeze()
-#         # Play audio in notebook
-#         ipd.Audio(audio_arr, rate=self.model.config.sampling_rate)
+class pyTextToSpeech():
 
+    def __init__(self) -> None:
+        self.engine = pyttsx3.init()
+        self.voices = self.engine.getProperty('voices')
+        self.rate = self.engine.getProperty('rate')
+        self.engine.setProperty('rate', self.rate-20)
+       
+
+    def text_to_speech(self, text:str, voice:str = None):
+            # self.engine.setProperty('voice', voice)
+            self.engine.say(text)
+            self.engine.runAndWait()
+            return
         
 if __name__ == "__main__":
     # Define text and description
@@ -69,6 +64,14 @@ Laura's voice is expressive and dramatic in delivery, speaking at a fast pace wi
     #                    device="cpu",
     #                    ).text_to_speech(text_prompt)
     
-    GoogleTextToSpeech().text_to_speech(text_prompt)    
-    
+    # start_time = time.time()
+    # GoogleTextToSpeech().text_to_speech(text_prompt) 
+    # end_time = time.time()
+    # print(f"Gtts Time taken: {end_time - start_time} seconds")
+
+    eng = pyTextToSpeech()
+    # for voice in eng.voices:
+    #     print(voice)
+    #     eng.text_to_speech(text_prompt, voice.name)
+    eng.text_to_speech(text_prompt, "com.apple.speech.synthesis.voice.Alex")
         

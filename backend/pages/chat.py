@@ -1,20 +1,15 @@
 import streamlit as st
 from services.prediction import get_prediction
-from services.app.textToSpeech import GoogleTextToSpeech
 from utilities import response_generator
 from streamlit import session_state as ss
 from services.app.speechToText import speech_to_text
 from threading import Thread
 
-gtts = GoogleTextToSpeech()
+
 start_interview = st.button("Start Interview")
 record = st.button("Record")
 answer = st.chat_input("Type your response here...")
 session_id = ss.session_id
-def speech_thread(text):
-    """Run TTS in a separate thread."""
-    tts_thread = Thread(target=gtts.text_to_speech, args=(text,))
-    tts_thread.start()
 
 with st.container(border=True, ):
     if "conversation" not in st.session_state:
