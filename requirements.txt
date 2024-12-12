@@ -19,6 +19,11 @@ fastapi
 python-multipart
 requests_toolbelt
 gtts
-llama-cpp-python
 langchain-pinecone
 pyttsx3
+useful-moonshine@git+https://github.com/usefulsensors/moonshine.git
+google-cloud-speech
+silero_vad
+sounddevice
+keyboard
+useful-moonshine-onnx@git+https://git@github.com/usefulsensors/moonshine.git#subdirectory=moonshine-onnx

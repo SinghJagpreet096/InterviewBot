@@ -25,10 +25,20 @@ def main(session_id):
             st.success("Data processed successfully")
             if "context" not in ss:
                 ss.context = context
-            st.switch_page("pages/chat.py")
+            st.switch_page("pages/video.py")
         except Exception as e:
             st.error("Oops! Something went wrong")
             raise e
+    left, right = st.columns([1, 1])
+    with left:
+        prev = st.button("Previous")
+        if prev:
+            st.switch_page("pages/candidate_login.py")
+    with right:
+        next = st.button("Next")
+        if next:
+            st.switch_page("pages/video.py")
+       
 
 if __name__ == "__main__":
     session_id = ss.session_id

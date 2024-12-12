@@ -20,7 +20,8 @@ password = st.text_input("Password", type="password")
 if st.button("Login"):
     if username == USERNAME and password == PASSWORD:
         st.success("Login successful!")
-        session_id = ss.session_id
+        if "session_id" not in ss:
+            ss.session_id = f"{username}123"
         time.sleep(1)
         st.switch_page("pages/upload.py")
     else:
