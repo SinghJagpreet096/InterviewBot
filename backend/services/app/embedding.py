@@ -2,13 +2,13 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from services.app.config import Config
-from langchain_pinecone import PineconeVectorStore
+
 import os
 from dotenv import load_dotenv
 import logging
 
-load_dotenv()
-PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
+# load_dotenv()
+# PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
 
 
 class Embeddings:
