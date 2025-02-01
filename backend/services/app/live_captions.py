@@ -5,6 +5,7 @@ import os
 import time
 from queue import Queue
 import keyboard
+from pynput import keyboard
 
 import numpy as np
 from silero_vad import VADIterator, load_silero_vad
@@ -70,7 +71,8 @@ class LiveCaptions:
         blocksize=CHUNK_SIZE,
         dtype=np.float32,
         callback=self.create_input_callback(q),
-    )
+    )   
+    
         stream.start()
 
         caption_cache = []
@@ -82,10 +84,14 @@ class LiveCaptions:
             self.print_captions("Ready...", caption_cache)
             try:
                 while True:
+                    # if not st.session_state.recording:
+                    #     raise KeyboardInterrupt
                     chunk, status = q.get()
                     if status:
                         print(status)
-                        st.write_stream(status)
+                        # st.write_stream(status)
+                        st.write_stream(self.response_generator(status))
+                        st.session_state.transcribed_text += status
 
                     speech = np.concatenate((speech, chunk))
                     if not recording:
@@ -111,8 +117,10 @@ class LiveCaptions:
 
                         if (time.time() - start_time) > MIN_REFRESH_SECS:
                             self.print_captions(self.transcribe(speech), caption_cache)
+                            self.response_generator(self.transcribe(speech))
                             start_time = time.time()
-            except KeyboardInterrupt:
+                            
+            except KeyboardInterrupt: 
                 stream.close()
 
                 if recording:
@@ -141,17 +149,22 @@ class LiveCaptions:
                 yield word + " "
                 time.sleep(0.2)
 
-    def end_recording(self, speech, caption_cache, do_print=True):
+    def end_recording(self, speech, do_print=True):
 
         """Transcribes, prints and caches the caption then clears speech buffer."""
         text = self.transcribe(speech)
         if do_print:
-            self.print_captions(text, caption_cache)
-            st.write_stream(self.response_generator(text))
-        caption_cache.append(text)
-        
+            # self.print_captions(text)
+            t = st.empty()
+            for i in range(len(text) + 1):
+                t.write("## %s..." % text[0:i])
+                time.sleep(0.1)
+            #
+        # caption_cache.append(text)
         speech *= 0.0
-
+        return text
+        # st.write_stream(self.response_generator(caption_cache[-1]))
+       
 
     def print_captions(self, text, caption_cache: list):
         """Prints right justified on same line, prepending cached captions."""
@@ -165,7 +178,7 @@ class LiveCaptions:
         else:
             text = " " * (MAX_LINE_LENGTH - len(text)) + text
         print("\r" + (" " * MAX_LINE_LENGTH) + "\r" + text, end="", flush=True)
-
+        
 
     def soft_reset(self, vad_iterator):
         """Soft resets Silero VADIterator without affecting VAD model state."""
@@ -175,5 +188,7 @@ class LiveCaptions:
 
 
 if __name__ == "__main__":
-    text = LiveCaptions("moonshine/base")()
-    print("final text",text)
+   
+    
+    text = LiveCaptions("moonshine/base")
+    print("final text",text())

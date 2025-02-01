@@ -58,8 +58,9 @@ def speech_thread(text):
     print("TTS thread started")
 
 
-def response_generator(response:str = "Hello! I am your AI Assistant. I will be conducting your interview today."):
-        speech_thread(response)
+def response_generator(response:str = "Hello! I am your AI Assistant. I will be conducting your interview today.", only_text = False):
+        if not only_text:
+            speech_thread(response)
         for word in response.split():
             
             yield word + " "
