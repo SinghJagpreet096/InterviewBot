@@ -45,7 +45,7 @@ class pyTextToSpeech():
         self.engine.setProperty('rate', self.rate-20)
        
 
-    def text_to_speech(self, text:str, voice:str = None):
+    def text_to_speech(self, text:str, voice:str = "com.apple.speech.synthesis.voice.Alex"):
             # self.engine.setProperty('voice', voice)
             self.engine.say(text)
             self.engine.runAndWait()
