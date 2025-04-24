@@ -59,11 +59,11 @@ def speech_thread(text):
 
 
 def response_generator(response:str = "Hello! I am your AI Assistant. I will be conducting your interview today."):
-        speech_thread(response)
-        for word in response.split():
-            
-            yield word + " "
-            time.sleep(0.2)
+    speech_thread(response)
+    for word in response.split():
+        
+        yield word + " "
+        time.sleep(0.2)
 
 def preview_documents(resume, job_description):
 

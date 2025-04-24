@@ -42,7 +42,31 @@ class speechRecognitionASR:
             except sr.RequestError as e:
                 print(f"Sorry, there was an error with the request; {e}")
         return text
-    
+
+class OpenAIASR():
+
+    def __init__(self):
+        self.model = whisper.load_model("base")
+        
+    def record_audio(self, filename="input.wav", duration=30, fs=44100):
+        # print("Recording...")
+        audio = sd.rec(int(duration * fs), samplerate=fs, channels=1)
+        sd.wait()  # Wait until recording is finished
+        write(filename, fs, audio)
+
+    def speech_to_text(self):
+        try:
+            print("recording...")   
+            self.record_audio("voice_input.wav")
+            result = self.model.transcribe("voice_input.wav")
+              
+        ## except the future warning
+        finally:
+            # Clean up
+            if os.path.exists("voice_input.wav"):
+                os.remove("voice_input.wav")
+        return result["text"]
+      
 # class moonshineASR:
 
 #     def __init__(self) -> None:
@@ -75,10 +99,20 @@ class speechRecognitionASR:
 #         # delete the audio file
 #         os.remove(audio)
 #         return text
-        
+import whisper
+import sounddevice as sd
+from scipy.io.wavfile import write
+
+model = whisper.load_model("base")
+  
 if __name__ == "__main__":
-        # text = moonshineASR().speech_to_text()
-        text = speechRecognitionASR.speech_to_text()
-        print(text)
+    # Initialize the speech recognition class
+    asr = OpenAIASR()
+    
+    # Call the speech_to_text method
+    text = asr.speech_to_text()
+    
+    # Print the recognized text
+    print("Recognized Text:", text)
 
     

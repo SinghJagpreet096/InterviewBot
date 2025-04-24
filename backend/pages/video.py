@@ -3,7 +3,7 @@ from streamlit_webrtc import webrtc_streamer
 from services.prediction import get_prediction
 from utilities import response_generator
 from streamlit import session_state as ss
-from services.app.speechToText import speechRecognitionASR
+from services.app.speechToText import speechRecognitionASR, OpenAIASR
 # from services.app.speechToText import moonshineASR
 
 from services.app.live_captions import LiveCaptions
@@ -13,6 +13,7 @@ video = st.camera_input("You are Live Now")
 session_id = ss.session_id
 # asr_engine = moonshineASR()
 # asr_engine = speechRecognitionASR()
+asr_engine = OpenAIASR()
 
 if "conversation" not in st.session_state:
         st.session_state.conversation = []
@@ -34,7 +35,7 @@ if start_interview:
         st.session_state.conversation.append({"role": "assistant", "content": response})
 
 if record:
-        voice = speechRecognitionASR.speech_to_text()
+        voice = asr_engine.speech_to_text()
         # voice = LiveCaptions("mooonshine/base")()
         st.markdown(voice)
         st.session_state.conversation.append({"role": "user", "content": voice})
