@@ -1,20 +1,9 @@
 
 import speech_recognition as sr
-import wave
 import os
-
-import warnings
-
-# Suppress specific UserWarning from the moonshine library
-warnings.filterwarnings(
-    "ignore",
-    category=UserWarning,
-    module="moonshine",
-)
-# import moonshine
-
-# TODO 
-# 1. Find a better model
+import whisper
+import sounddevice as sd
+from scipy.io.wavfile import write
 
 class speechRecognitionASR:
     
@@ -67,43 +56,7 @@ class OpenAIASR():
                 os.remove("voice_input.wav")
         return result["text"]
       
-# class moonshineASR:
 
-#     def __init__(self) -> None:
-#         # self.engine = moonshine()
-#         self.model = 'moonshine/tiny'
-#         self.recognizer = sr.Recognizer()
-
-#     def speech(self):
-#         with sr.Microphone() as source:
-#             print("Adjusting for ambient noise...")
-#             self.recognizer.adjust_for_ambient_noise(source)
-#             print("Listening...")
-            
-#             # Capture the audio
-#             audio = self.recognizer.listen(source)
-#             with wave.open("recorded_audio.wav", "wb") as wav_file:
-#                 wav_file.setnchannels(1)  # Mono audio
-#                 wav_file.setsampwidth(2)  # 16-bit audio
-#                 wav_file.setframerate(audio.sample_rate)
-#                 wav_file.writeframes(audio.frame_data)  # Use frame_data instead of get_raw_data
-
-#             return "recorded_audio.wav"
-            
-        
-#     def speech_to_text(self):
-#         audio = self.speech()
-#         # print(audio) 
-#         text = moonshine.transcribe(audio
-#                                , model=self.model)
-#         # delete the audio file
-#         os.remove(audio)
-#         return text
-import whisper
-import sounddevice as sd
-from scipy.io.wavfile import write
-
-model = whisper.load_model("base")
   
 if __name__ == "__main__":
     # Initialize the speech recognition class

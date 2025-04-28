@@ -1,58 +1,30 @@
-import subprocess
-import platform
-import time
+from services import data_process
+from services import prediction
+import click
 import sys
-import os
+from llama_cpp import Llama
 
-backend_dir = os.path.join(os.getcwd(), 'backend')
-frontend_dir = os.path.join(os.getcwd(), 'frontend')
-app_dir = os.path.join(os.getcwd(), )
+if sys.argv[1] == "data_process":
+    data_process.main()
+elif sys.argv[1] == "prediction":   
+    prediction.main()
 
+# if __name__ == "__main__":
+    
 
-def run_in_new_terminal(command, cwd=None):
-    """
-    Runs a command in a new terminal window based on the OS.
-    """
-    system = platform.system()
-    activate_venv = ['pyenv', 'activate', 'inter_bot']
-    if system == "Windows":
-        subprocess.Popen(['start', 'cmd', '/k'] + command, cwd=cwd, shell=True)
-    elif system == "Darwin":  # macOS
-        subprocess.Popen(['osascript', '-e', f'tell application "Terminal" to do script "cd {cwd} && {" ".join(activate_venv)} && {" ".join(command)}"'])
-    elif system == "Linux":
-        subprocess.Popen(['gnome-terminal', '--', 'bash', '-c', f'cd {cwd} && {" ".join(command)}; exec bash'])
+#     llm = Llama.from_pretrained(
+#         repo_id="singhjagpreet/Llama-3.2-1B-Instruct-Q8_0-GGUF",
+#         filename="llama-3.2-1b-instruct-q8_0.gguf",
+#         verbose=False
+#     )
 
-def run_fastapi():
-    """
-    Starts the FastAPI server using Uvicorn in a new terminal.
-    """
-    run_in_new_terminal(["uvicorn", "main:app", "--reload"], cwd=backend_dir)
+#     res = llm.create_chat_completion(
+#         messages = [
+#             {
+#                 "role": "user",
+#                 "content": "What is the capital of France?"
+#             }
+#         ]
+#     )
 
-def run_streamlit():
-    """
-    Starts the Streamlit application in a new terminal.
-    """
-    run_in_new_terminal(["streamlit", "run", "app.py"], cwd=frontend_dir)
-
-def start_ollama():
-    """
-    Starts Ollama in a new terminal.
-    """
-    run_in_new_terminal(["ollama", "serve"], cwd=app_dir)
-
-if __name__ == "__main__":
-    # Start each process in a separate terminal
-    run_fastapi()
-    time.sleep(1)  # Optional: add small delay to avoid race conditions
-    run_streamlit()
-    time.sleep(1)
-    start_ollama()
-
-    print("All processes started in separate terminals.")
-
-    try:
-        while True:
-            time.sleep(1)  # Keep main thread alive
-    except KeyboardInterrupt:
-        print("Shutting down...")
-        sys.exit()
+    # print("response:",res)
