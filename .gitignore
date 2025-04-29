@@ -3,3 +3,7 @@
 **.pdf
 **/chroma_db/
 .env
+req.txt
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints
+# Ignore Python bytecode files
