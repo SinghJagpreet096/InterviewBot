@@ -1,2 +1,61 @@
-# InterviewBot
-practise interview with a chatbot
+# 🧠 InterviewBot
+
+**InterviewBot** is an AI-powered virtual interviewer built with [Streamlit](https://streamlit.io) and [Ollama](https://ollama.com). It combines large language models, speech recognition, and text-to-speech to simulate dynamic interview conversations. Ideal for practicing interviews or building custom dialogue systems.
+
+---
+
+## ✨ Features
+
+- 🎙️ **Speech-to-Text** using Whisper
+- 🗣️ **Text-to-Speech** streaming with real-time feedback
+- 🤖 **LLM-powered responses** using local models via Ollama (e.g., Mistral, LLaMA2)
+- 👥 **Multi-agent architecture** for extensible dialogue
+- ⚡ **Streamlit-based UI** for fast prototyping and interaction
+
+---
+
+## 🧰 Requirements
+Make sure you have the following installed:
+
+- Python 3.10.12 (via pyenv)
+- Make
+
+## ⚙️ Installation
+### 1. Clone the repo
+
+```bash
+$ git clone https://github.com/yourusername/interviewbot.git
+$ cd interviewbot
+```
+
+### 2. Set up Python environment and dependencies
+```bash
+$ make setup
+```
+
+### 3. Install Ollama and pull the model
+```bash
+$ make setup-ollama
+```
+
+### 4. Run the Streamlit app
+```bash
+$ make run-app
+```
+
+### 🛠 Available Make Commands
+```bash
+$ make setup           # Set up virtual environment and install Python dependencies
+$ make setup-ollama    # Install Ollama and pull the default model
+$ make run-app         # Run the Streamlit app
+$ make stop-app        # Stop the Streamlit app
+$ make clean           # Stop services and delete virtual environment
+$ make help            # Display all available commands
+```
+
+## 🙋‍♂️ Contributing
+*Contributions are welcome! Please fork the repository and submit a pull request.*
+
+## 📬 Contact
+*For questions or issues, please open an issue on GitHub.*
+

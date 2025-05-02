@@ -6,4 +6,5 @@
 req.txt
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints
-# Ignore Python bytecode files
+ollama.log
+.python-version
