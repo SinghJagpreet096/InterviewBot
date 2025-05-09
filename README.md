@@ -4,6 +4,9 @@
 
 ---
 
+# Want to Support
+[![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/freeEngineer)
+
 ## ✨ Features
 
 - 🎙️ **Speech-to-Text** using Whisper
@@ -57,5 +60,9 @@ $ make help            # Display all available commands
 *Contributions are welcome! Please fork the repository and submit a pull request.*
 
 ## 📬 Contact
-*For questions or issues, please open an issue on GitHub.*
+*For questions or issues, please open an [issue](https://github.com/SinghJagpreet096/InterviewBot/issues) on GitHub.*
+
+[![LinkedIn](https://img.icons8.com/color/48/000000/linkedin.png)](https://www.linkedin.com/in/singhjagpreet096/) [![Hugging Face](https://huggingface.co/front/assets/huggingface_logo-noborder.svg)](https://huggingface.co/singhjagpreet)
+[![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/freeEngineer)
+
 
