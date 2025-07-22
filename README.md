@@ -2,6 +2,12 @@
 
 **InterviewBot** is an AI-powered virtual interviewer built with [Streamlit](https://streamlit.io) and [Ollama](https://ollama.com). It combines large language models, speech recognition, and text-to-speech to simulate dynamic interview conversations. Ideal for practicing interviews or building custom dialogue systems.
 
+
+# Data Flow
+
+![dfd](https://static.swimlanes.io/2e264bf3df9ef8fcdb1f90a09760ab94.png)
+
+![QnA](https://static.swimlanes.io/06181cc7265a05098cc384f75f888640.png)
 ---
 
 # Want to Support
